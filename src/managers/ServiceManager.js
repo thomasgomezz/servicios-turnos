@@ -77,7 +77,7 @@ export default class ServiceManager {
         const services = await this.#readFile();
 
         //Id nuevo = el id mas grande quue existe + 1 (o 1 si la lista está vacía)
-        const lastId = services.reduce((max, s) => Math.max(max, s.id) , 0);    //reduce -> recorre la listta acumulando resultados, arranca en 0.
+        const lastId = services.reduce((max, s) => Math.max(max, s.id) , 0);    //reduce -> recorre la lista acumulando resultados, arranca en 0.
 
         //Armamos el servicio con solo los campos permitidos
         //(Asi ignoramos un id que venga de afuera)
