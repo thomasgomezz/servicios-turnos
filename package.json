@@ -1,0 +1,24 @@
+{
+  "name": "servicios-turnos",
+  "version": "1.0.0",
+  "description": "administrador de servicios para un sistema de turnos y reservas",
+  "main": "src/app.js",
+  "scripts": {
+    "start": "node src/app.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/thomasgomezz/servicios-turnos.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "type": "module",
+  "bugs": {
+    "url": "https://github.com/thomasgomezz/servicios-turnos/issues"
+  },
+  "homepage": "https://github.com/thomasgomezz/servicios-turnos#readme",
+  "dependencies": {
+    "dotenv": "^18.0.7"
+  }
+}

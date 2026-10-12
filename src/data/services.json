@@ -1,0 +1,29 @@
+[
+  {
+    "id": 1,
+    "name": "Corte de pelo",
+    "description": "Corte clásico con lavado incluido",
+    "duration": 30,
+    "price": 5000,
+    "category": "Peluquería",
+    "available": true
+  },
+  {
+    "id": 2,
+    "name": "Masaje descontracturante",
+    "description": "Masaje corporal para aliviar tensiones",
+    "duration": 60,
+    "price": 12000,
+    "category": "Bienestar",
+    "available": true
+  },
+  {
+    "id": 3,
+    "name": "Manicura",
+    "description": "Limpieza y esmaltado de uñas",
+    "duration": 45,
+    "price": 6500,
+    "category": "Estética",
+    "available": false
+  }
+]
