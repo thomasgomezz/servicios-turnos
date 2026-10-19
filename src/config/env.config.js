@@ -9,7 +9,7 @@ const requireVars = ["PORT", "NODE_ENV"];
 //Buscamos cuales no estan definidas (o estan vacias)
 const missingVars = requireVars.filter((name) => !process.env[name]);
 
-if (missingVars.lengt > 0) {
+if (missingVars.length > 0) {
     console.error(
         `Error de configuración: faltan las variables de entorno: ${missingVars.join(", ")}.\n` +
       "Copiá .env.example a .env y completá los valores."
