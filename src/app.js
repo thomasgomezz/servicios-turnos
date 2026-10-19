@@ -1,11 +1,11 @@
 import express from "express";
 import config from "./config/env.config.js"
-import serviceRouter from "./routes/services.router.js";
+import servicesRouter from "./routes/services.router.js";
 
 const app = express();
 
 app.use(express.json());
-app.use("/api/services", serviceRouter);
+app.use("/api/services", servicesRouter);
 
 app.listen(config.port, () => {
   console.log(`Servidor escuchando en el puerto ${config.port}`);

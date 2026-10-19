@@ -35,7 +35,45 @@ router.get("/", async(req, res) => {
     res.status(200).json(services); //Responde con un codigo 200(Ok)
 });
 
-export default router;
+//Buscar un servicio por id
 
+router.get("/:sid", async (req, res) => {
+    const service = await manager.getServiceById(req.params.sid);   //("2", como texto)
+
+    if (!service) {
+        return res.status(404).json({error: "Servicio no encontrado."});    //404 No encontrado.
+    }
+
+    //si existe...
+    res.status(200).json(service);
+})
+
+//POST -> crear un servicio
+router.post("/", async (req, res) => {
+    try{
+        //req.body trae los datos; el manager valida y genera el di
+        const newService = await manager.addService(req.body);
+        res.status(201).json(newService);
+       }
+       catch(error)
+       {
+        //AddService lanza un error si faltan campos
+        res.status(400).json({error: error.message});
+       }
+});
+
+//Delete
+
+router.delete("/:sid", async (req, res) =>{
+    const deleted = await manager.deleteService(req.params.sid);
+
+    if (!deleted) {
+        return res.status(404).json({error: "Servicio no encontrado."});
+    }
+
+    res.status(200).json({message: "Servicio eliminado.", service: deleted});
+});
+
+export default router;
 
 
