@@ -1,6 +1,6 @@
 # Servicios Turnos
 
-Administrador de servicios para un sistema de turnos y reservas, hecho con Node.js y ESM. Incluye la clase `ServiceManager`, que permite consultar, agregar, actualizar y eliminar servicios guardados en un archivo JSON.
+API REST hecha con Node.js, Express y ESM para gestionar los servicios de un sistema de turnos y reservas. La lógica vive en la clase `ServiceManager`, que guarda los servicios en un archivo JSON, y las rutas están en un router de Express.
 
 ## Instalación
 
@@ -24,11 +24,13 @@ Si falta alguna, la app no arranca y muestra un mensaje indicando cuál es.
 
 ## Ejecución
 
+## Ejecución
+
 ```bash
 npm start
 ```
 
-Esto corre `src/app.js`, que muestra un ejemplo de uso de todos los métodos.
+Esto corre `src/app.js` y levanta el servidor en el puerto definido en `PORT`. Con el valor de ejemplo, la API queda en `http://localhost:8080/api/services`.
 
 ## Recurso `services`
 
@@ -45,6 +47,58 @@ Los servicios se guardan en `src/data/services.json`. Cada servicio tiene esta f
   available: true
 }
 ```
+## Endpoints
+
+Ruta base: `/api/services`
+
+| Método | Ruta                | Descripción                                   | Respuestas        |
+| ------ | ------------------- | --------------------------------------------- | ----------------- |
+| GET    | `/api/services`     | Devuelve todos los servicios (acepta filtros) | 200               |
+| GET    | `/api/services/:sid`| Devuelve un servicio por id                   | 200, 404          |
+| POST   | `/api/services`     | Crea un servicio                              | 201, 400          |
+| PUT    | `/api/services/:sid`| Actualiza un servicio                         | 200, 404          |
+| DELETE | `/api/services/:sid`| Elimina un servicio                           | 200, 404          |
+
+### Filtros en GET /api/services
+
+Se pasan como query params y se pueden combinar:
+
+- `category`: filtra por categoría (no distingue mayúsculas). Ejemplo: `?category=Estética`
+- `available`: filtra por disponibilidad (`true` o `false`). Ejemplo: `?available=true`
+
+Ejemplo combinado: `GET /api/services?category=Estética&available=false`
+
+### Crear un servicio (POST)
+
+El body va en formato JSON. El `id` se genera automáticamente: si lo enviás, se ignora. Si falta algún campo, responde 400.
+
+```json
+{
+  "name": "Depilación",
+  "description": "Depilación con cera",
+  "duration": 40,
+  "price": 7000,
+  "category": "Estética",
+  "available": true
+}
+```
+
+### Actualizar un servicio (PUT)
+
+Se envían solo los campos a modificar. El `id` no se puede cambiar.
+
+```json
+{
+  "price": 7500
+}
+```
+
+### Ejemplo de errores
+
+```json
+{ "error": "Servicio no encontrado." }
+```
+
 
 ## Uso de `ServiceManager`
 
@@ -80,8 +134,9 @@ await manager.deleteService(1);
 
 ```
 src/
-  config/env.config.js        # carga y valida las variables de entorno
-  managers/ServiceManager.js  # lógica de los servicios
-  data/services.json          # datos
-  app.js                      # ejemplo de uso
+  config/env.config.js          # carga y valida las variables de entorno
+  managers/ServiceManager.js    # lógica de los servicios
+  routes/services.router.js     # rutas de /api/services
+  data/services.json            # datos
+  app.js                        # configura Express y levanta el servidor
 ```
