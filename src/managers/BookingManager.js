@@ -43,15 +43,15 @@ async #saveFile(bookings) {
 //----Metodos publicos----
 
 //Crea una reserva. el id se genera acá y services siempre arranca vacío.
-async createBooking(bookingsData) {
-    const missigFields = REQUIRED_FIELDS.filter(
+async createBooking(bookingData) {
+    const missingFields = REQUIRED_FIELDS.filter(
         (field) => 
-            bookingsData?.[field] === undefined ||
-            bookingsData?.[field] === null ||
-            bookingsData?.[field] === ""
+            bookingData?.[field] === undefined ||
+            bookingData?.[field] === null ||
+            bookingData?.[field] === ""
     );
 
-    if (missigFields > 0) {
+    if (missingFields.length > 0) {
         throw createError(`Reserva incompleta. Faltan: ${missingFields.join(", ")}`, 400);
     }
 
@@ -65,11 +65,11 @@ async createBooking(bookingsData) {
 
         const newBooking = {
             id : lastId + 1,
-            clientName : bookingsData.clientName,
-            clientEmail : bookingsData.clientEmail,
-            date : bookingsData.date,
-            time : bookingsData.time,
-            status : bookingsData.status ?? "pending", //si no mandan status, queda "pending"
+            clientName : bookingData.clientName,
+            clientEmail : bookingData.clientEmail,
+            date : bookingData.date,
+            time : bookingData.time,
+            status : bookingData.status ?? "pending", //si no mandan status, queda "pending"
             services : [],
         };
 
@@ -87,7 +87,7 @@ async getBookingById(id) {
 
 //Agrega un servicio a una reserva. Si ya estaba, suma 1 a quantity.
 
-async addServiceToBooking (bin, sid) {
+async addServiceToBooking (bid, sid) {
     const bookings = await this.#readFile();
     const booking = bookings.find((b) => b.id === Number(bid));
 
@@ -95,11 +95,12 @@ async addServiceToBooking (bin, sid) {
         throw createError("Reserva no encontrada.", 404);
     }
 
-    const service = await this.serviceManager.getBookingById(sid);
+    const service = await this.serviceManager.getServiceById(sid);
 
-    if (!service) {
+    if (!service)     
+    {
         throw createError("Servicio no encontrado.", 404);
-
+    }
         //Ese servicio ya esta dentro de la reserva?
         const item = booking.services.find((s) => s.service === service.id);
 
@@ -107,13 +108,12 @@ async addServiceToBooking (bin, sid) {
             item.quantity += 1;
         }else
         {
-            booking.service.push({service: service.id, quantity: 1});
+            booking.services.push({service: service.id, quantity: 1});
         }
 
         //booking es  un objeto q esta dentro de bokings, asi que al modificarlo ya modificamos la lista. solo falta guardarla
 
         await this.#saveFile(bookings);
         return booking;
-    }
 }
 }
