@@ -1,12 +1,12 @@
 [
   {
     "id": 1,
-    "name": "Corte de pelo",
+    "name": "Corte de pelo premium",
     "description": "Corte clásico con lavado incluido",
-    "duration": 30,
+    "duration": 45,
     "price": 5000,
     "category": "Peluquería",
-    "available": true
+    "available": false
   },
   {
     "id": 2,

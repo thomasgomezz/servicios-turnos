@@ -77,15 +77,19 @@ router.delete("/:sid", async (req, res) =>{
 //PUT -> actualizar un servicio
 
 router.put("/:sid", async (req, res) => {
-    const {id, ...dataToUpdate } = req.body ?? {};
+    try{
+         const { id, ...dataToUpdate } = req.body ?? {};
+         const updated = await manager.updateService(req.params.sid, dataToUpdate);
 
-    const updated = await manager.updateService(req.params.sid, dataToUpdate);
-
-    if (!updated) {
+         if (!updated) {
         return res.status(404).json({error: "Servicio no encontrado."});
+        }
+        res.status(200).json(updated);
     }
-
-    res.status(200).json(updated);
+    catch(error)
+    {
+        res.status(400).json({error: error.message});
+    }    
 })
 
 export default router;

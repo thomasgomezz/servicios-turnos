@@ -10,6 +10,28 @@ const REQUIRED_FIELDS = [
     "available",
 ];
 
+// NUEVO: una regla por cada campo. Cada regla es una función que recibe el valor
+// y devuelve true si es válido o false si no lo es.
+
+const FIELD_RULES = {
+    name: (v) => typeof v === "string" && v.trim() !== "",
+    description: (v) => typeof v === "string" && v.trim() !== "",
+    duration: (v) => typeof v === "number" && v > 0,
+    price : (v) => typeof v === "number" && v >= 0,
+    category : (v) => typeof v === "string" && v.trim() !== "",
+    available : (v) => typeof v === "boolean",
+};
+
+//Nuevo TP3: 
+//Recorre las reglas y devuelve los nombres de los campos que vinieron en los datos pero NO cumplen su regla.
+
+function getInvalidFields(data)
+{
+    return Object.keys(FIELD_RULES).filter(
+        (field) => data[field] !== undefined && !FIELD_RULES[field](data[field])
+    );
+}
+
 export default class ServiceManager {
     //recibe la ruta del archivo JSON donde se guardan los servicios
     constructor(filePath) {
@@ -74,6 +96,13 @@ export default class ServiceManager {
             throw new Error (`Servicio incompleto. Faltan: ${missingFields.join(", ")}`);
         }
         
+        //TP3 
+        const invalidFields = getInvalidFields(serviceData);
+
+        if (invalidFields.length > 0) {
+            throw new Error(`Campos inválidos: ${invalidFields.join(", ")}`)
+        }
+
         const services = await this.#readFile();
 
         //Id nuevo = el id mas grande quue existe + 1 (o 1 si la lista está vacía)
@@ -104,6 +133,23 @@ export default class ServiceManager {
 
     async updateService(id, updatedData)    
     {
+        // NUEVO: nos quedamos solo con los campos conocidos. Así se ignora el id
+        // y cualquier campo inventado que venga en el body.
+        const cleanData = {};
+        for(const field of Object.keys(FIELD_RULES))
+        {
+            if (updatedData?.[field] !== undefined) {
+                cleanData[field] = updatedData[field];
+            }
+        }
+
+        //Validamos el tipo de los campos que si vinieron
+        const invalidFields = getInvalidFields(cleanData);
+
+        if (invalidFields.length > 0) {
+            throw new Error(`Campos inválidos: ${invalidFields.join(", ")}`);
+        }
+
         const services = await this.#readFile();
         const index = services.findIndex((s) => s.id === Number(id));
     
@@ -113,7 +159,7 @@ export default class ServiceManager {
 
         services[index] = {
             ...services[index],
-            ...updatedData,
+            ...cleanData,
             id: services[index].id,
         };
 
