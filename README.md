@@ -24,8 +24,6 @@ Si falta alguna, la app no arranca y muestra un mensaje indicando cuál es.
 
 ## Ejecución
 
-## Ejecución
-
 ```bash
 npm start
 ```
@@ -99,6 +97,52 @@ Se envían solo los campos a modificar. El `id` no se puede cambiar.
 { "error": "Servicio no encontrado." }
 ```
 
+## Recurso `bookings`
+
+Las reservas se guardan en `src/data/bookings.json`. Cada reserva tiene esta forma:
+
+```js
+{
+  id: 1,                          // se genera automáticamente
+  clientName: "Juan Pérez",
+  clientEmail: "juan@mail.com",
+  date: "2026-11-05",
+  time: "10:30",
+  status: "pending",              // si no se envía, queda en "pending"
+  services: [                     // arranca vacío
+    { service: 1, quantity: 2 }   // id del servicio y cantidad
+  ]
+}
+```
+
+### Endpoints
+
+Ruta base: `/api/bookings`
+
+| Método | Ruta                                | Descripción                                    | Respuestas   |
+| ------ | ----------------------------------- | ---------------------------------------------- | ------------ |
+| POST   | `/api/bookings`                     | Crea una reserva (nace con `services` vacío)   | 201, 400     |
+| GET    | `/api/bookings/:bid`                | Devuelve una reserva por id                    | 200, 404     |
+| POST   | `/api/bookings/:bid/services/:sid`  | Agrega un servicio a una reserva existente     | 200, 404     |
+
+### Crear una reserva (POST)
+
+El `id` se genera automáticamente y `services` siempre arranca vacío. Los campos `clientName`, `clientEmail`, `date` y `time` son obligatorios, y el email tiene que ser válido. Si falta alguno, responde 400.
+
+```json
+{
+  "clientName": "Juan Pérez",
+  "clientEmail": "juan@mail.com",
+  "date": "2026-11-05",
+  "time": "10:30"
+}
+```
+
+### Agregar un servicio a una reserva
+
+`POST /api/bookings/1/services/2` (sin body).
+
+Valida que existan tanto la reserva como el servicio; si falta alguno, responde 404. Si el servicio ya estaba en la reserva, no se duplica: se suma 1 a `quantity`.
 
 ## Uso de `ServiceManager`
 
@@ -136,7 +180,9 @@ await manager.deleteService(1);
 src/
   config/env.config.js          # carga y valida las variables de entorno
   managers/ServiceManager.js    # lógica de los servicios
+  managers/BookingManager.js    # lógica de las reservas
   routes/services.router.js     # rutas de /api/services
-  data/services.json            # datos
+  routes/bookings.router.js     # rutas de /api/bookings
+  data/services.json            # datos de servicios
+  data/bookings.json            # datos de reservas
   app.js                        # configura Express y levanta el servidor
-```
