@@ -5,25 +5,13 @@ import fs from "fs/promises";
 
 const REQUIRED_FIELDS  = ["clientName", "clientEmail", "date", "time"];
 
-//Crea un error con un codigo HTTP adjunto asi el router sabe que status responder
-
-function createError (message, status)
-{
-    const error = new Error(message);
-    error.status = status;
-    return error;
-}
-
 export default class BookingManager {
-    //Recibe la ruta del JSON de reservas y el ServiceManager,
-    //Porq para agregar un servicio a una reserva hayq ue verificar q el servicio exista.
-    constructor(filePath, serviceManager) 
+    constructor(filePath) 
     {
         this.filePath = filePath;
-        this.serviceManager = serviceManager;
     }
 
-//-------Metodos auxiliares(privados)------
+//---Metodos auxiliares (privados)----
 
 async #readFile(){
     try{
@@ -116,4 +104,5 @@ async addServiceToBooking (bid, sid) {
         await this.#saveFile(bookings);
         return booking;
 }
+
 }
