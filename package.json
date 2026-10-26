@@ -2,9 +2,9 @@
   "name": "servicios-turnos",
   "version": "1.0.0",
   "description": "administrador de servicios para un sistema de turnos y reservas",
-  "main": "src/app.js",
+  "main": "src/server.js",
   "scripts": {
-    "start": "node src/app.js"
+    "start": "node src/server.js"
   },
   "repository": {
     "type": "git",

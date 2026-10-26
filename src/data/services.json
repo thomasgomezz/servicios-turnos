@@ -3,10 +3,10 @@
     "id": 1,
     "name": "Corte de pelo premium",
     "description": "Corte clásico con lavado incluido",
-    "duration": 45,
-    "price": 5000,
+    "duration": 50,
+    "price": 5500,
     "category": "Peluquería",
-    "available": false
+    "available": true
   },
   {
     "id": 2,
@@ -25,5 +25,14 @@
     "price": 6500,
     "category": "Estética",
     "available": false
+  },
+  {
+    "id": 5,
+    "name": "Pedicura",
+    "description": "Cuidado de pies",
+    "duration": 50,
+    "price": 8000,
+    "category": "Estética",
+    "available": true
   }
 ]

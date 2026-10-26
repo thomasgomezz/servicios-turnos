@@ -1,11 +1,11 @@
 import {Router} from "express";
 import {
     getServices, 
-    getServicesById,
-    creatService,
+    getServiceById,
+    createService,
     updateService,
     deleteService,
-} from "../controllers/bookings.controller.js";
+} from "../controllers/services.controller.js";
 
 
 const router = Router();        // = router = express.Router();
@@ -14,10 +14,10 @@ const router = Router();        // = router = express.Router();
 router.get("/", getServices);
 
 //Buscar un servicio por id
-router.get("/:sid", getServicesById);
+router.get("/:sid", getServiceById);
 
 //POST -> crear un servicio
-router.post("/", creatService);
+router.post("/", createService);
 
 //Delete
 router.delete("/:sid", deleteService);

@@ -1,15 +1,35 @@
 import path from "path";
 import { fileURLToPath } from "url";
-import ServieManager from "../managers/ServiceManager.js";
+import ServiceManager from "../managers/ServiceManager.js";
 
 //En ESM no existe __dirname, asi que lo armamos
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 
 //El controller crea el manager(apunta al JSON de servicios)
-const manager = new ServieManager(
+const manager = new ServiceManager(
     path.join(__dirname, "..", "data", "services.json")
 );
+
+//GET /api/services
+export const getServices = async (req,res) => {
+    const {category, available} = req.query; //los filtros vienen en la URL
+    
+    let services = await manager.getServices(); //el manager devuelve todos
+
+    if (category) {
+        services = services.filter(
+            (s) => s.category.toLowerCase() === category.toLowerCase()
+        );
+    }
+     //En la URL todo llega como texto, por eso comparamos contra String(s.available)
+    if (available !== undefined) {
+        services = services.filter((s) => String(s.available) === available);
+    }
+
+    res.status(200).json(services);
+}
+
 
 //GET /api/services/:sid
 export const getServiceById = async (req, res) => {
@@ -24,7 +44,7 @@ export const getServiceById = async (req, res) => {
 }
 
 //POST /api/services
-export const creatService = async (req, res) => {
+export const createService = async (req, res) => {
     try{
         //req.body trae los datos; el manager valida y genera el di
         const newService = await manager.addService(req.body);
