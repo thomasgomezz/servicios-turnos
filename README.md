@@ -178,11 +178,14 @@ await manager.deleteService(1);
 
 ```
 src/
-  config/env.config.js          # carga y valida las variables de entorno
-  managers/ServiceManager.js    # lógica de los servicios
-  managers/BookingManager.js    # lógica de las reservas
-  routes/services.router.js     # rutas de /api/services
-  routes/bookings.router.js     # rutas de /api/bookings
-  data/services.json            # datos de servicios
-  data/bookings.json            # datos de reservas
-  app.js                        # configura Express y levanta el servidor
+  config/env.config.js                  # carga y valida las variables de entorno
+  controllers/services.controller.js    # recibe la request de services y responde
+  controllers/bookings.controller.js    # recibe la request de bookings y responde
+  managers/ServiceManager.js            # lógica de datos de los servicios
+  managers/BookingManager.js            # lógica de datos de las reservas
+  routes/services.router.js             # define las rutas de /api/services
+  routes/bookings.router.js             # define las rutas de /api/bookings
+  data/services.json                    # datos de servicios
+  data/bookings.json                    # datos de reservas
+  app.js                                # configura Express y monta los routers
+  server.js                             # levanta el servidor
