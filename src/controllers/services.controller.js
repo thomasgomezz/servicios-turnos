@@ -1,86 +1,75 @@
-import path from "path";
-import { fileURLToPath } from "url";
-import ServiceManager from "../managers/ServiceManager.js";
+import servicesService from "../services/services.service.js";
 
-//En ESM no existe __dirname, asi que lo armamos
 
-const __dirname = path.dirname(fileURLToPath(import.meta.url));
+//----------------------------------------------------------------
+//Controller -> lee el req, llama al servicio y responde el res
+//----------------------------------------------------------------
 
-//El controller crea el manager(apunta al JSON de servicios)
-const manager = new ServiceManager(
-    path.join(__dirname, "..", "data", "services.json")
-);
+//Traduce el "type" del error del service al codigo HTTP
+
+const STATUS_BY_TYPE = {
+    validation: 400,
+    not_found:404,
+};
+
+const handlerError = (res, error) => {
+    const status = STATUS_BY_TYPE[error.type] || 500;  //si no tiene type, es un error inesperado
+    res.status(status).json({error: error.message});
+};
 
 //GET /api/services
-export const getServices = async (req,res) => {
-    const {category, available} = req.query; //los filtros vienen en la URL
-    
-    let services = await manager.getServices(); //el manager devuelve todos
-
-    if (category) {
-        services = services.filter(
-            (s) => s.category.toLowerCase() === category.toLowerCase()
-        );
+ export const getServices = async (req, res) => {
+    try{
+        const {category, available} = req.query;
+        const services = await servicesService.getServices({category, available });
+        res.status(200).json(services);
+    }catch(error)
+    {
+        handlerError(res, error);
     }
-     //En la URL todo llega como texto, por eso comparamos contra String(s.available)
-    if (available !== undefined) {
-        services = services.filter((s) => String(s.available) === available);
+ };
+
+export const getServiceById = async (res, req) => {
+    try{
+        const service = await servicesService.getServicesById(req.params.sid);
+        res.status(200).json(service);
+    }catch(error)
+    {
+        handlerError(res, error);
     }
-
-    res.status(200).json(services);
-}
-
-
-//GET /api/services/:sid
-export const getServiceById = async (req, res) => {
-    const service = await manager.getServiceById(req.params.sid);   //("2", como texto)
-
-    if (!service) {
-        return res.status(404).json({error: "Servicio no encontrado."});    //404 No encontrado.
-    }
-
-    //si existe...
-    res.status(200).json(service);
-}
+};
 
 //POST /api/services
-export const createService = async (req, res) => {
+export const createService = async (req, res) => 
+{
     try{
-        //req.body trae los datos; el manager valida y genera el di
-        const newService = await manager.addService(req.body);
-        res.status(201).json(newService);
-       }
-       catch(error)
-       {
-        //AddService lanza un error si faltan campos
-        res.status(400).json({error: error.message});
-       }
-}
-
-//PUT /api/services/:sid
-export const updateService = async (req, res) => {
-    try{
-         const { id, ...dataToUpdate } = req.body ?? {};
-         const updated = await manager.updateService(req.params.sid, dataToUpdate);
-
-         if (!updated) {
-        return res.status(404).json({error: "Servicio no encontrado."});
-        }
-        res.status(200).json(updated);
-    }
-    catch(error)
+        const newService = await servicesService.createService(req.body);
+        res.status(200).json(newService);
+    }catch(error)
     {
-        res.status(400).json({error: error.message});
-    }    
-}
+        handlerError(res, error);
+    }
+};
 
-//DELETE /api/services/:sid
-export const deleteService = async (req,res) => {
-    const deleted = await manager.deleteService(req.params.sid);
-    
-        if (!deleted) {
-            return res.status(404).json({error: "Servicio no encontrado."});
-        }
-    
+//PUT /api/services
+export const updatedService = async(req, res) => {
+    try{
+        const updated = await servicesService.updatedService(req.params.sid, req.body);
+        res.status(200).json(updated);
+    }catch(error)
+    {
+        handlerError(res, error);
+    }
+};
+
+//DELETE /api/services
+export const deleteService = async(req, res) => 
+{
+    try{
+        const deleted = await servicesService.deleteService(req.params.sid);
         res.status(200).json({message: "Servicio eliminado.", service: deleted});
-}
+    }catch(error)
+    {
+        handlerError(res, error);
+    }
+};
