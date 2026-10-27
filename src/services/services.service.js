@@ -1,4 +1,4 @@
-import servicesRepository from "../repositories/services.repository";
+import servicesRepository from "../repositories/services.repository.js";
 
 //service -> Contiene reglas de negocio, no conoce req/res
 

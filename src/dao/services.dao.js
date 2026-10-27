@@ -3,7 +3,7 @@ import fs from "fs/promises";
 import path from "path";
 import { fileURLToPath } from "url";
 
-const __dirname = path.__dirname(fileURLToPath(import.meta.url));
+const __dirname = path.dirname(fileURLToPath(import.meta.url));
 
 //El DAO conoce la ruta de su archivo
 const FILE_PATH = path.join(__dirname, "..", "data", "services.json");

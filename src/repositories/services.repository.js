@@ -1,4 +1,4 @@
-import servicesDao from "../dao/services.dao";
+import servicesDao from "../dao/services.dao.js";
 
 //Repository -> ofrece métodos de acceso a datos sin reglas de negocios
 

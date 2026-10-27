@@ -52,7 +52,7 @@ export const createService = async (req, res) =>
 };
 
 //PUT /api/services
-export const updatedService = async(req, res) => {
+export const updateService = async(req, res) => {
     try{
         const updated = await servicesService.updatedService(req.params.sid, req.body);
         res.status(200).json(updated);
