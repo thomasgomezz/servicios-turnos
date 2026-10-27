@@ -29,9 +29,9 @@ const handlerError = (res, error) => {
     }
  };
 
-export const getServiceById = async (res, req) => {
+export const getServiceById = async (req, res) => {
     try{
-        const service = await servicesService.getServicesById(req.params.sid);
+        const service = await servicesService.getServiceById(req.params.sid);
         res.status(200).json(service);
     }catch(error)
     {
@@ -44,7 +44,7 @@ export const createService = async (req, res) =>
 {
     try{
         const newService = await servicesService.createService(req.body);
-        res.status(200).json(newService);
+        res.status(201).json(newService);
     }catch(error)
     {
         handlerError(res, error);
@@ -54,7 +54,7 @@ export const createService = async (req, res) =>
 //PUT /api/services
 export const updateService = async(req, res) => {
     try{
-        const updated = await servicesService.updatedService(req.params.sid, req.body);
+        const updated = await servicesService.updateService(req.params.sid, req.body);
         res.status(200).json(updated);
     }catch(error)
     {
