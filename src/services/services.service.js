@@ -60,11 +60,11 @@ class ServicesService {
         return services;
     }
 
-    async getServicesById(id)
+    async getServiceById(id)
     {
         const service = await servicesRepository.getById(id);
 
-        if (!services) {
+        if (!service) {
             throw createError("Servicio no encontrado.", "not_found");
         }
         return service;
@@ -72,14 +72,21 @@ class ServicesService {
 
     async createService(serviceData)
     {
+        //1- campos faltantes
         const missingFields = REQUIRED_FIELDS.filter(
-            (fields) => 
+            (field) => 
                 serviceData?.[field] === undefined ||
                 serviceData?.[field] === null ||
                 serviceData?.[field] === ""
         );
 
-        const invalidFields = getInvalidFields(cleanData);
+        if (missingFields.length > 0) {
+            throw createError(`Servicio incompleto. Faltan: ${missingFields.join(", ")}`,
+                "validation");
+        }
+
+        //2-Tipos inválidos
+        const invalidFields = getInvalidFields(serviceData);
 
         if (invalidFields.length > 0) {
             throw createError(
@@ -88,6 +95,32 @@ class ServicesService {
             );
         }
 
+        //3-Armamos el servicio con los campos permitidos(se ignora el id q venga afuera)
+        const newService = {
+            name: serviceData.name,
+            description: serviceData.description,
+            duration: serviceData.duration,
+            price: serviceData.price,
+            category: serviceData.category,
+            available: serviceData.available,
+        };
+
+        return await servicesRepository.create(newService);
+    }
+
+    async updateService(id, updateData) {
+        //Nos quedamos solo con los campos conocidos
+        const cleanData = {};
+        for(const field of Object.keys(FIELD_RULES)){
+            if (updateData?.[field] !== undefined) {
+                cleanData[field] = updateData[field];
+            }
+        }
+        const invalidFields = getInvalidFields(cleanData);
+        if (invalidFields.length > 0) {
+            throw createError (`Campos inválidos: ${invalidFields.join(", ")}`,
+                "validation");
+        }
         const updated = await servicesRepository.update(id, cleanData);
 
         if (!updated) {

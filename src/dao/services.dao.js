@@ -1,4 +1,3 @@
-import { FILE } from "dns";
 import fs from "fs/promises";
 import path from "path";
 import { fileURLToPath } from "url";
@@ -8,7 +7,7 @@ const __dirname = path.dirname(fileURLToPath(import.meta.url));
 //El DAO conoce la ruta de su archivo
 const FILE_PATH = path.join(__dirname, "..", "data", "services.json");
 
-class servicesDAO {
+class ServicesDAO {
     //---Metodos auxiliares--- (privados)
      
     async #readFile(){
@@ -19,7 +18,7 @@ class servicesDAO {
         catch(error)
         {
             //Si el archivo no existe todavia...
-            if(error.code === "ENONET") return [];
+            if(error.code === "ENOENT") return [];
             throw error;
         }
     }
@@ -86,4 +85,4 @@ class servicesDAO {
 }
 
 //Exportamos una instancia lista para usar
-export default new servicesDAO();
+export default new ServicesDAO();

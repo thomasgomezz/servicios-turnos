@@ -25,7 +25,7 @@ class ServicesRepository{
 
     async delete(id)
     {
-        await servicesDao.delete(id);
+        return await servicesDao.delete(id);
     }
 
 }
