@@ -1,66 +1,50 @@
-import path from "path";
-import { fileURLToPath } from "url";
-import BookingManager from "../managers/BookingManager.js";
-import ServiceManager from "../managers/ServiceManager.js";
+import bookingsService from "../services/bookings.service.js";
 
-const __dirname = path.dirname(fileURLToPath(import.meta.url));
+//--------------------------------------------------------------
+//Controller -> lee el req, llama al servicio y responde el res
+//--------------------------------------------------------------
 
-const bookingManager = new BookingManager (
-    path.join(__dirname, "..", "data", "bookings.json")
-);
+const STATUS_BY_TYPE = {
+    validation: 400,
+    not_found : 404,
+};
 
-const serviceManager = new ServiceManager(
-    path.join(__dirname, "..", "data", "services.json")
-);
+const handlerError = (res, error) =>
+{
+    const status = STATUS_BY_TYPE[error.type] || 500; //si no tiene type, es un error inesperado
+    res.status(status).json({error: error.message});
+};
 
-
-//booking -> reserva
-//services -> catalogo
 //POST /api/bookings
 export const createBooking = async (req, res) => {
     try{
-        const newBooking = await bookingManager.createBooking(req.body);
+        const newBooking = await bookingsService.createBooking(req.body);
         res.status(201).json(newBooking);
     }catch(error){
-        res.status(400).json({error:error.message});
+        handlerError(res, error);
     }
 };
 
 //GET /api/bookings/:bid
 export const getBookingById = async (req, res) => {
-    const booking = await bookingManager.getBookingById(req.params.bid);
-
-    if (!booking) {
-        return res.status(404).json({error: "Reserva no encontrada."});
-    }
+    try
+    {
+        const booking = await bookingsService.getBookingById(req.params.bid);
     res.status(200).json(booking);
+    }catch(error)
+    {
+        handlerError(res, error);
+    }
 };
 
 //POST /api/bookings/:bid/services/:sid
 //Agregar un servicio a la reserva
 export const addServiceToBooking = async (req, res) => {
     try{
-
         const {bid, sid} = req.params;
-
-        //1 - existe la reserva? 
-        const booking = await bookingManager.getBookingById(bid); 
-        if (!booking) {
-            return res.status(404).json({error: "Reserva no encontrada."});
-        }
-
-        //2- existe el servicio? (se valida con el serviceManager)
-        const service = await serviceManager.getServiceById(sid);
-        if (!service) {
-            return res.status(404).json({error: "Servicio no encontrado."});
-        }
-
-        //3- Ambos existen
-        const updateBooking = await bookingManager.addServiceToBooking(bid, service.id);
-        res.status(200).json(updateBooking);
-       
+        const updatedBooking = await bookingsService.addServiceToBooking(bid, sid);
+        res.status(200).json(updatedBooking);
     }catch(error){
-        res.status(500).json({error: error.message});
+        handlerError(res, error);
     }
 };
-
