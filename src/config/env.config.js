@@ -4,7 +4,7 @@ import dotenv from "dotenv";
 dotenv.config();
 
 //variables que la app necesita si o si para arrancar
-const requireVars = ["PORT", "NODE_ENV"];
+const requireVars = ["PORT", "NODE_ENV", "MONGO_URI"];
 
 //Buscamos cuales no estan definidas (o estan vacias)
 const missingVars = requireVars.filter((name) => !process.env[name]);
@@ -21,4 +21,5 @@ if (missingVars.length > 0) {
 export default {
     port: process.env.PORT,
     nodeEnv : process.env.NODE_ENV,
+    mongoUri: process.env.MONGO_URI,
 };

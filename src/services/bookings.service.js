@@ -70,25 +70,34 @@ class BookingsService {
     }
 
     //Agrega un servicio a una reserva, si ya está... suma 1 a quantity
-    async addServiceToBooking(bid, sid)
-    {
-        //1 existe la reserva? 
-        const booking = await this.getBookingById(bid);
+    async addServiceToBooking(bid, sid) {
+    //1. ¿Existe la reserva? (si no, getBookingById lanza el 404)
+    const booking = await this.getBookingById(bid);
 
-        //2- existe el servicio? 
-        const service = await servicesService.getServiceById(sid);
+    //2. ¿Existe el servicio? (si no, getServiceById lanza el 404)
+    const service = await servicesService.getServiceById(sid);
 
-        //3-si es servicio ya estaba.... se incrementa quantity
-        const item = booking.services.find((s) => s.service === service.id);
+    //3. Copiamos los servicios de la reserva a una lista simple
+    const services = booking.services.map((s) => ({
+        service: s.service,
+        quantity: s.quantity,
+    }));
 
-        if (item) {
-            item.quantity += 1;
-        }else {
-            booking.service.push({service: service.id, quantity: 1});
-        }
+    //4. Regla de negocio: si el servicio ya estaba, se suma 1 a quantity
+    //Los ids de Mongo son objetos, asi que se comparan como texto (con === darian siempre false)
+    const item = services.find(
+        (s) => s.service.toString() === service._id.toString()
+    );
 
-        return await bookingsRepository.update(booking.id, booking);
+    if (item) {
+        item.quantity += 1;
+    } else {
+        services.push({ service: service._id, quantity: 1 });
     }
+
+    //5. Guardamos solo el campo que cambio
+    return await bookingsRepository.update(booking._id, { services });
+}
 }
 
 export default new BookingsService();
